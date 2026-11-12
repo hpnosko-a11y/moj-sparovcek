@@ -16,6 +16,7 @@ button{background:var(--green);color:white;border:0;font-weight:700;cursor:point
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0}
 .tabs .tab{padding:11px 5px;margin:0;background:#e8f3e9;color:var(--green);font-size:13px}
 .tabs .tab.active{background:var(--green);color:white}
+.person-picker{grid-template-columns:repeat(3,1fr);margin:10px 0 18px}
 @media(max-width:380px){.tabs{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -69,7 +70,7 @@ button{background:var(--green);color:white;border:0;font-weight:700;cursor:point
 <select id="category"></select>
 <button id="addEntryBtn">Shrani vnos</button><button class="secondary" id="voiceBtn">🎙️ Glasovni vnos opisa</button><p class="small" id="voiceMsg"></p><p class="msg" id="entryMsg"></p></div>
 <div class="card hidden" id="entriesCard"><h3 id="entriesTitle">Najini vnosi</h3><div id="entries">Vnosi se bodo prikazali tukaj.</div></div>
-<div class="card" id="overviewCard"><h3>Najin pregled</h3><p class="small">Ločen pregled prihodkov, odhodkov in stanja.</p><div class="row"><div><h3>Matic</h3><p class="small">Prihodki</p><strong id="maticIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="maticExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="maticBalance">0,00 €</div></div><div><h3>Nives</h3><p class="small">Prihodki</p><strong id="nivesIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="nivesExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="nivesBalance">0,00 €</div></div></div><hr><h3>Skupaj</h3><div class="row"><div><p class="small">Prihodki</p><strong id="combinedIncome">0,00 €</strong></div><div><p class="small">Odhodki</p><strong id="combinedExpense">0,00 €</strong></div></div><p class="small">Skupno stanje</p><div class="total" id="combinedBalance">0,00 €</div></div>
+<div class="card" id="overviewCard"><h3>Najin pregled</h3><p class="small">Izberi, čigav pregled želiš videti.</p><div class="tabs person-picker"><button type="button" class="tab active" data-person="matic">Matic</button><button type="button" class="tab" data-person="nives">Nives</button><button type="button" class="tab" data-person="together">Skupaj</button></div><div id="personMatic" class="person-panel"><h3>Matic</h3><p class="small">Prihodki</p><strong id="maticIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="maticExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="maticBalance">0,00 €</div></div><div id="personNives" class="person-panel hidden"><h3>Nives</h3><p class="small">Prihodki</p><strong id="nivesIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="nivesExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="nivesBalance">0,00 €</div></div><div id="personTogether" class="person-panel hidden"><h3>Skupaj</h3><div class="row"><div><p class="small">Prihodki</p><strong id="combinedIncome">0,00 €</strong></div><div><p class="small">Odhodki</p><strong id="combinedExpense">0,00 €</strong></div></div><p class="small">Skupno stanje</p><div class="total" id="combinedBalance">0,00 €</div></div></div>
 <button class="danger" id="signOutBtn">Odjava</button>
 </section>
 </main>
@@ -190,6 +191,7 @@ el('signInBtn').addEventListener('click',signIn);el('signUpBtn').addEventListene
 el('createHouseBtn').addEventListener('click',createHouse);el('joinHouseBtn').addEventListener('click',joinHouse);
 el('addEntryBtn').addEventListener('click',addEntry);el('voiceBtn').addEventListener('click',voiceEntry);el('signOutBtn').addEventListener('click',signOut);
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('[data-person]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-person]').forEach(x=>x.classList.toggle('active',x===b));['Matic','Nives','Together'].forEach(name=>show('person'+name,name.toLowerCase()===b.dataset.person|| (name==='Together'&&b.dataset.person==='together')));}));
 db.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setTimeout(checkSession,0);});
 checkSession();
 </script>
