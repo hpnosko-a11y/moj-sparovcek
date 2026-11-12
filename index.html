@@ -112,7 +112,7 @@ async function loadMembership(){
  if(!data){show('house',true);show('app',false);return;}
  currentHousehold=data.households||null;
  if(!currentHousehold){show('house',true);show('app',false);return;}
- show('house',false);show('app',true);el('houseTitle').textContent=currentHousehold.name||'Najina blagajna';
+ show('house',false);show('app',true);setTab('overview');el('houseTitle').textContent=currentHousehold.name||'Najina blagajna';
  el('inviteDisplay').textContent=currentHousehold.invite_code?'Koda za partnerja: '+currentHousehold.invite_code:'';
  await loadEntries();
 }
@@ -164,8 +164,8 @@ async function loadEntries(){
  for(const t of data||[]){if(t.type==='income')income+=Number(t.amount);else expense+=Number(t.amount);}
  el('incomeTotal').textContent=money(income);el('expenseTotal').textContent=money(expense);el('balance').textContent=money(income-expense);
  el('entries').innerHTML='';
- if(!visible.length){el('entries').textContent=activeTab==='income'?'Za zdaj še ni prihodkov.':activeTab==='expense'?'Za zdaj še ni odhodkov.':'Za zdaj še ni vnosov.';return;}
  const visible=(data||[]).filter(t=>activeTab==='all'||activeTab==='overview'||t.type===activeTab);
+ if(!visible.length){el('entries').textContent=activeTab==='income'?'Za zdaj še ni prihodkov.':activeTab==='expense'?'Za zdaj še ni odhodkov.':'Za zdaj še ni vnosov.';return;}
  for(const t of visible){
   const div=document.createElement('div');div.className='item';
   const strong=document.createElement('strong');strong.textContent=(t.type==='income'?'+ ':'− ')+money(t.amount);
