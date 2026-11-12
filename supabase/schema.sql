@@ -57,7 +57,7 @@ begin
     raise exception 'Ime blagajne je obvezno.';
   end if;
 
-  v_code := upper(encode(gen_random_bytes(4), 'hex'));
+  v_code := upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8));
   insert into public.households(name, invite_code)
   values (trim(p_name), v_code)
   returning id into v_household_id;
