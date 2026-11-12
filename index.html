@@ -69,7 +69,7 @@ button{background:var(--green);color:white;border:0;font-weight:700;cursor:point
 <select id="category"></select>
 <button id="addEntryBtn">Shrani vnos</button><button class="secondary" id="voiceBtn">🎙️ Glasovni vnos opisa</button><p class="small" id="voiceMsg"></p><p class="msg" id="entryMsg"></p></div>
 <div class="card hidden" id="entriesCard"><h3 id="entriesTitle">Najini vnosi</h3><div id="entries">Vnosi se bodo prikazali tukaj.</div></div>
-<div class="card" id="overviewCard"><h3>Dobrodošla v najini blagajni!</h3><p class="small">Izberi zavihek »Prihodki« za plačo in druge prilive ali »Odhodki« za trgovino, avto, položnice in ostale stroške.</p></div>
+<div class="card" id="overviewCard"><h3>Najin pregled</h3><p class="small">Ločen pregled prihodkov, odhodkov in stanja.</p><div class="row"><div><h3>Matic</h3><p class="small">Prihodki</p><strong id="maticIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="maticExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="maticBalance">0,00 €</div></div><div><h3>Nives</h3><p class="small">Prihodki</p><strong id="nivesIncome">0,00 €</strong><p class="small">Odhodki</p><strong id="nivesExpense">0,00 €</strong><p class="small">Stanje</p><div class="total" id="nivesBalance">0,00 €</div></div></div><hr><h3>Skupaj</h3><div class="row"><div><p class="small">Prihodki</p><strong id="combinedIncome">0,00 €</strong></div><div><p class="small">Odhodki</p><strong id="combinedExpense">0,00 €</strong></div></div><p class="small">Skupno stanje</p><div class="total" id="combinedBalance">0,00 €</div></div>
 <button class="danger" id="signOutBtn">Odjava</button>
 </section>
 </main>
@@ -160,9 +160,16 @@ async function addEntry(){
 async function loadEntries(){
  const {data,error}=await db.from('transactions').select('id,type,amount,description,category,created_at,user_id').eq('household_id',currentHousehold.id).order('created_at',{ascending:false}).limit(100);
  if(error){el('entries').textContent='Napaka pri nalaganju: '+error.message;return;}
- let income=0,expense=0;
- for(const t of data||[]){if(t.type==='income')income+=Number(t.amount);else expense+=Number(t.amount);}
+ let income=0,expense=0, maticIncome=0,maticExpense=0,nivesIncome=0,nivesExpense=0;
+ for(const t of data||[]){
+  const amount=Number(t.amount)||0;
+  if(t.type==='income'){income+=amount;if(t.user_id===currentUser.id)maticIncome+=amount;else nivesIncome+=amount;}
+  else {expense+=amount;if(t.user_id===currentUser.id)maticExpense+=amount;else nivesExpense+=amount;}
+ }
  el('incomeTotal').textContent=money(income);el('expenseTotal').textContent=money(expense);el('balance').textContent=money(income-expense);
+ el('maticIncome').textContent=money(maticIncome);el('maticExpense').textContent=money(maticExpense);el('maticBalance').textContent=money(maticIncome-maticExpense);
+ el('nivesIncome').textContent=money(nivesIncome);el('nivesExpense').textContent=money(nivesExpense);el('nivesBalance').textContent=money(nivesIncome-nivesExpense);
+ el('combinedIncome').textContent=money(income);el('combinedExpense').textContent=money(expense);el('combinedBalance').textContent=money(income-expense);
  el('entries').innerHTML='';
  const visible=(data||[]).filter(t=>activeTab==='all'||activeTab==='overview'||t.type===activeTab);
  if(!visible.length){el('entries').textContent=activeTab==='income'?'Za zdaj še ni prihodkov.':activeTab==='expense'?'Za zdaj še ni odhodkov.':'Za zdaj še ni vnosov.';return;}
