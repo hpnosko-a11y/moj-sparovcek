@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="sl">
 <head>
@@ -7,86 +6,153 @@
 <title>Moj Šparovček – Matic & Nives</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f3f6f2;color:#24352b;font-family:Arial,sans-serif;padding:18px}
-main{max-width:520px;margin:auto}
-h1{text-align:center;color:#26734d;font-size:26px}
-.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 3px 14px #0000000c}
-input,select,button{width:100%;padding:13px;margin:6px 0;border:1px solid #d5ded7;border-radius:10px;font-size:16px}
-button{background:#26734d;color:white;border:0;font-weight:bold}
-button.secondary{background:#e7f1e9;color:#26734d}
-button.danger{background:#a33b36}
-.total{font-size:27px;font-weight:bold;color:#26734d}
-.small{font-size:13px;color:#66756b}
-.item{border-bottom:1px solid #e8eee9;padding:12px 0}
-.item:last-child{border:0}
-.hidden{display:none}
-.row{display:flex;gap:8px}
-.row>*{flex:1;min-width:0}
+:root{--green:#26734d;--pale:#e8f3e9;--ink:#24352b;--muted:#68776d}
+*{box-sizing:border-box}body{margin:0;padding:22px 16px 40px;background:linear-gradient(160deg,#f1f8ef,#fff8e9);color:var(--ink);font-family:system-ui,-apple-system,Arial,sans-serif}
+main{max-width:520px;margin:auto}.hero{text-align:center;padding:14px 8px 22px}.pig{width:150px;height:130px;margin:0 auto 8px;display:block}.hero h1{margin:4px 0;color:var(--green);font-size:30px}.hero p{margin:5px;color:var(--muted)}
+.card{background:white;border:1px solid #e7eee7;border-radius:20px;padding:20px;margin:14px 0;box-shadow:0 8px 28px #254a3010}
+h2,h3{margin:0 0 12px}input,select,button{width:100%;padding:14px;margin:6px 0;border:1px solid #d5ded7;border-radius:12px;font-size:16px}input:focus,select:focus{outline:2px solid #a8d3b3;border-color:var(--green)}
+button{background:var(--green);color:white;border:0;font-weight:700;cursor:pointer}button.secondary{background:var(--pale);color:var(--green)}button.danger{background:#a33b36}
+.small{font-size:13px;color:var(--muted);line-height:1.5}.msg{min-height:22px;font-size:14px;color:var(--green)}.total{font-size:30px;font-weight:800;color:var(--green)}.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}.item{border-bottom:1px solid #e8eee9;padding:12px 0}.item:last-child{border:0}.hidden{display:none!important}.pill{display:inline-block;background:var(--pale);padding:5px 10px;border-radius:20px;font-size:12px;color:var(--green)}
 </style>
 </head>
 <body>
 <main>
-<h1>🐷 Moj Šparovček</h1>
-<p style="text-align:center">Matic & Nives</p>
+<header class="hero">
+<svg class="pig" viewBox="0 0 180 150" role="img" aria-label="Ilustracija rožnatega prašička">
+<path d="M40 43 24 22 58 31M122 31l34-12-12 35" fill="#f4a6ad" stroke="#b95f70" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="89" cy="78" rx="67" ry="54" fill="#f6b8bd" stroke="#b95f70" stroke-width="4"/>
+<ellipse cx="90" cy="91" rx="29" ry="20" fill="#ed8f9b"/><ellipse cx="80" cy="91" rx="4" ry="7" fill="#9b4c5c"/><ellipse cx="101" cy="91" rx="4" ry="7" fill="#9b4c5c"/>
+<circle cx="66" cy="66" r="5" fill="#553d3d"/><circle cx="112" cy="66" r="5" fill="#553d3d"/>
+<path d="M80 112q10 9 20 0" fill="none" stroke="#9b4c5c" stroke-width="3" stroke-linecap="round"/>
+<path d="M42 116v17m94-17v17" stroke="#b95f70" stroke-width="9" stroke-linecap="round"/>
+<path d="M153 79q18-3 14-18" fill="none" stroke="#b95f70" stroke-width="4" stroke-linecap="round"/>
+<rect x="76" y="10" width="28" height="7" rx="3" fill="#c68a35"/>
+</svg>
+<h1>Moj Šparovček</h1><p>Skupaj varčujeva, skupaj načrtujeva.</p><span class="pill">Matic & Nives</span>
+</header>
 
 <section class="card" id="login">
-<h3>Prijava ali registracija</h3>
-<input id="email" type="email" placeholder="E-poštni naslov">
-<input id="password" type="password" placeholder="Geslo">
-<button onclick="signIn()">Prijava</button>
-<button class="secondary" onclick="signUp()">Ustvari račun</button>
-<p class="small" id="loginMsg">Vsak naj ustvari svoj račun s svojim e-poštnim naslovom.</p>
+<h3>Dobrodošla!</h3><p class="small">Prijavi se ali ustvari svoj račun. Vsak od vaju naj uporabi svoj e-poštni naslov.</p>
+<input id="email" type="email" autocomplete="email" placeholder="E-poštni naslov">
+<input id="password" type="password" autocomplete="current-password" placeholder="Geslo (najmanj 6 znakov)">
+<button id="signInBtn" type="button">Prijava</button>
+<button class="secondary" id="signUpBtn" type="button">Ustvari račun</button>
+<p class="msg" id="loginMsg" aria-live="polite"></p>
 </section>
 
 <section class="card hidden" id="house">
-<h3>Skupna blagajna</h3>
-<p>Ustvari novo blagajno ali se pridruži obstoječi.</p>
+<h3>Najina skupna blagajna</h3><p class="small">Ustvari blagajno ali se pridruži blagajni s kodo, ki jo deli partner.</p>
 <input id="houseName" placeholder="Ime blagajne (npr. Matic in Nives)">
-<button onclick="createHouse()">Ustvari blagajno</button>
+<button id="createHouseBtn">Ustvari blagajno</button>
 <hr>
 <input id="inviteCode" placeholder="Koda za pridružitev">
-<button class="secondary" onclick="joinHouse()">Pridruži se blagajni</button>
-<p class="small" id="houseMsg"></p>
+<button class="secondary" id="joinHouseBtn">Pridruži se blagajni</button>
+<p class="msg" id="houseMsg" aria-live="polite"></p>
 </section>
 
 <section class="hidden" id="app">
-<div class="card">
-<h3 id="houseTitle">Najina blagajna</h3>
-<p class="small">Skupno stanje</p>
-<div class="total" id="balance">0,00 €</div>
-<div class="row">
-<div><p class="small">Prihodki</p><strong id="incomeTotal">0,00 €</strong></div>
-<div><p class="small">Stroški</p><strong id="expenseTotal">0,00 €</strong></div>
-</div>
-<p class="small" id="inviteDisplay"></p>
-</div>
-
-<div class="card">
-<h3>Dodaj vnos</h3>
-<select id="kind">
-<option value="expense">Strošek</option>
-<option value="income">Prihodek</option>
-</select>
+<div class="card"><h3 id="houseTitle">Najina blagajna</h3><p class="small">Skupno stanje</p><div class="total" id="balance">0,00 €</div>
+<div class="row"><div><p class="small">Prihodki</p><strong id="incomeTotal">0,00 €</strong></div><div><p class="small">Stroški</p><strong id="expenseTotal">0,00 €</strong></div></div><p class="small" id="inviteDisplay"></p></div>
+<div class="card"><h3>Dodaj vnos</h3>
+<select id="kind"><option value="expense">Strošek</option><option value="income">Prihodek</option></select>
 <input id="amount" type="number" min="0.01" step="0.01" placeholder="Znesek v €">
 <input id="description" placeholder="Opis (npr. trgovina, plača)">
-<select id="category">
-<option>Hrana</option><option>Stanovanje</option><option>Prevoz</option>
-<option>Položnice</option><option>Otroci</option><option>Zdravje</option>
-<option>Zabava</option><option>Plača</option><option>Drugo</option>
-</select>
-<button onclick="addEntry()">Shrani vnos</button>
-<button class="secondary" onclick="voiceEntry()">🎙️ Glasovni vnos</button>
-<p class="small" id="voiceMsg">Glasovni vnos je odvisen od podpore brskalnika.</p>
-</div>
-
-<div class="card">
-<h3>Najini vnosi</h3>
-<div id="entries">Nalaganje ...</div>
-</div>
-<button class="danger" onclick="signOut()">Odjava</button>
+<select id="category"><option>Hrana</option><option>Stanovanje</option><option>Prevoz</option><option>Položnice</option><option>Otroci</option><option>Zdravje</option><option>Zabava</option><option>Plača</option><option>Drugo</option></select>
+<button id="addEntryBtn">Shrani vnos</button><button class="secondary" id="voiceBtn">🎙️ Glasovni vnos</button><p class="small" id="voiceMsg"></p><p class="msg" id="entryMsg"></p></div>
+<div class="card"><h3>Najini vnosi</h3><div id="entries">Vnosi se bodo prikazali tukaj.</div></div>
+<button class="danger" id="signOutBtn">Odjava</button>
 </section>
 </main>
-
 <script>
-const SUPABASE_URL =
+const SUPABASE_URL = "https://npihfkirynxugazlosti.supabase.co";
+const SUPABASE_KEY = "sb_publishable_TaJNXxsN1WCnvXJAns3WVA_MFHvv672";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null, currentHousehold = null;
+const el = id => document.getElementById(id);
+const money = n => new Intl.NumberFormat('sl-SI',{style:'currency',currency:'EUR'}).format(Number(n)||0);
+function message(id,text){el(id).textContent=text;}
+function show(id,yes){el(id).classList.toggle('hidden',!yes);}
+async function signUp(){
+ const email=el('email').value.trim(),password=el('password').value;
+ if(!email||password.length<6){message('loginMsg','Vpiši e-pošto in geslo z vsaj 6 znaki.');return;}
+ message('loginMsg','Ustvarjam račun ...');
+ const {data,error}=await db.auth.signUp({email,password});
+ if(error){message('loginMsg',error.message);return;}
+ if(data.session){message('loginMsg','Račun je ustvarjen.');await checkSession();}
+ else message('loginMsg','Račun je ustvarjen. Preveri e-pošto in potrdi registracijo, nato se prijavi.');
+}
+async function signIn(){
+ const email=el('email').value.trim(),password=el('password').value;
+ if(!email||!password){message('loginMsg','Vpiši e-pošto in geslo.');return;}
+ message('loginMsg','Prijavljam ...');
+ const {error}=await db.auth.signInWithPassword({email,password});
+ if(error){message('loginMsg',error.message);return;}
+ await checkSession();
+}
+async function signOut(){await db.auth.signOut();currentUser=null;currentHousehold=null;show('login',true);show('house',false);show('app',false);}
+async function checkSession(){
+ const {data:{session}}=await db.auth.getSession();currentUser=session?.user||null;
+ show('login',!currentUser);
+ if(!currentUser){show('house',false);show('app',false);return;}
+ await loadMembership();
+}
+async function loadMembership(){
+ const {data,error}=await db.from('household_members').select('household_id, households(id,name,invite_code)').eq('user_id',currentUser.id).limit(1).maybeSingle();
+ if(error){show('house',true);show('app',false);message('houseMsg','Prijava je uspela, vendar še ne najdem tabel blagajne v Supabase. Potrebno je nastaviti podatkovno bazo.');return;}
+ if(!data){show('house',true);show('app',false);return;}
+ currentHousehold=data.households||null;
+ if(!currentHousehold){show('house',true);show('app',false);return;}
+ show('house',false);show('app',true);el('houseTitle').textContent=currentHousehold.name||'Najina blagajna';
+ el('inviteDisplay').textContent=currentHousehold.invite_code?'Koda za partnerja: '+currentHousehold.invite_code:'';
+ await loadEntries();
+}
+async function createHouse(){
+ const name=el('houseName').value.trim();if(!name){message('houseMsg','Vpiši ime blagajne.');return;}
+ message('houseMsg','Ustvarjam blagajno ...');
+ const {data,error}=await db.rpc('create_household',{p_name:name});
+ if(error){message('houseMsg','Napaka: '+error.message+' (preveriti morava nastavitev podatkovne baze).');return;}
+ await loadMembership();
+}
+async function joinHouse(){
+ const code=el('inviteCode').value.trim();if(!code){message('houseMsg','Vpiši kodo za pridružitev.');return;}
+ message('houseMsg','Pridružujem ...');
+ const {error}=await db.rpc('join_household',{p_invite_code:code});
+ if(error){message('houseMsg','Napaka: '+error.message);return;}
+ await loadMembership();
+}
+async function addEntry(){
+ const amount=Number(el('amount').value),description=el('description').value.trim();
+ if(!(amount>0)||!description){message('entryMsg','Vpiši veljaven znesek in opis.');return;}
+ const {error}=await db.from('transactions').insert({household_id:currentHousehold.id,user_id:currentUser.id,type:el('kind').value,amount,description,category:el('category').value});
+ if(error){message('entryMsg','Vnosa ni bilo mogoče shraniti: '+error.message);return;}
+ el('amount').value='';el('description').value='';message('entryMsg','Vnos je shranjen.');await loadEntries();
+}
+async function loadEntries(){
+ const {data,error}=await db.from('transactions').select('id,type,amount,description,category,created_at,user_id').eq('household_id',currentHousehold.id).order('created_at',{ascending:false}).limit(100);
+ if(error){el('entries').textContent='Napaka pri nalaganju: '+error.message;return;}
+ let income=0,expense=0;
+ for(const t of data||[]){if(t.type==='income')income+=Number(t.amount);else expense+=Number(t.amount);}
+ el('incomeTotal').textContent=money(income);el('expenseTotal').textContent=money(expense);el('balance').textContent=money(income-expense);
+ el('entries').innerHTML='';
+ if(!data?.length){el('entries').textContent='Za zdaj še ni vnosov.';return;}
+ for(const t of data){
+  const div=document.createElement('div');div.className='item';
+  const strong=document.createElement('strong');strong.textContent=(t.type==='income'?'+ ':'− ')+money(t.amount);
+  const desc=document.createElement('div');desc.textContent=(t.description||'')+' · '+(t.category||'Drugo');
+  const small=document.createElement('div');small.className='small';small.textContent=new Date(t.created_at).toLocaleString('sl-SI')+(t.user_id===currentUser.id?' · vnesel/a si ti':' · vnesel/a partner');
+  div.append(strong,desc,small);el('entries').append(div);
+ }
+}
+function voiceEntry(){
+ const Speech=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!Speech){message('voiceMsg','Ta brskalnik ne podpira glasovnega vnosa.');return;}
+ const rec=new Speech();rec.lang='sl-SI';rec.onresult=e=>{el('description').value=e.results[0][0].transcript;message('voiceMsg','Besedilo je prepoznano. Znesek vpiši ročno.');};rec.onerror=()=>message('voiceMsg','Glasovnega vnosa ni bilo mogoče uporabiti.');rec.start();message('voiceMsg','Poslušam ...');
+}
+el('signInBtn').addEventListener('click',signIn);el('signUpBtn').addEventListener('click',signUp);
+el('createHouseBtn').addEventListener('click',createHouse);el('joinHouseBtn').addEventListener('click',joinHouse);
+el('addEntryBtn').addEventListener('click',addEntry);el('voiceBtn').addEventListener('click',voiceEntry);el('signOutBtn').addEventListener('click',signOut);
+db.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;setTimeout(checkSession,0);});
+checkSession();
+</script>
+</body>
+</html>
